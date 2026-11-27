@@ -213,12 +213,15 @@ const SECTIONS = [
                 "연구자 교류: 같은 주제·방법론 연구자 스터디 매칭", OTHER] },
     { id: "Q31", col: "Q31 자유 의견", text: "AI로 해결하고 싶은 연구 작업이나 도서관에 바라는 점이 있다면 자유롭게 적어 주세요.", type: "text", required: false },
     { id: "Q32", col: "Q32 개인정보 동의", text: "개인정보 수집·이용에 동의하십니까? 동의한 응답자에게만 경품을 발송합니다.", type: "single",
-      note: "수집 목적: 응답자 경품 발송 / 수집 항목: 휴대폰 번호 / 보유 기간: 경품 발송 후 즉시 파기",
+      note: "수집 목적: 응답자 본인 확인 및 경품 발송 / 수집 항목: 휴대폰 번호, 학번(교번) / 보유 기간: 경품 발송 후 즉시 파기",
       options: ["동의합니다", "동의하지 않습니다"] },
   ], next: a => a.Q32 === "동의합니다" ? "s7" : null },
 
   { id: "s7", title: "경품 수령 정보", questions: [
     { id: "Q32-1", col: "Q32-1 휴대폰 번호", text: "경품을 받을 휴대폰 번호를 입력해 주세요('-' 제외).", type: "tel" },
+    { id: "Q32-2", col: "Q32-2 학번(교번)", text: "학번(교번)을 입력해 주세요.", type: "short",
+      note: "학번(교번)은 경품 수령자 본인 확인을 위해서만 사용하며, 경품 발송 후 즉시 파기합니다.",
+      placeholder: "예: 2025123456" },
   ], next: () => null },
 ];
 
@@ -264,6 +267,11 @@ function renderQuestion(q) {
   } else if (q.type === "tel") {
     const inp = el("input", { type: "tel", inputmode: "numeric", maxlength: "11", placeholder: "01012345678",
       oninput: e => { e.target.value = e.target.value.replace(/\D/g, ""); answers[q.id] = e.target.value; } });
+    inp.value = answers[q.id] || "";
+    box.append(inp);
+  } else if (q.type === "short") {
+    const inp = el("input", { type: "text", maxlength: "20", placeholder: q.placeholder || "",
+      oninput: e => { e.target.value = e.target.value.replace(/\s/g, ""); answers[q.id] = e.target.value; } });
     inp.value = answers[q.id] || "";
     box.append(inp);
   } else {
