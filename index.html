@@ -320,7 +320,8 @@ function renderQuestion(q) {
 function refreshOptions(q, wrap) {
   const multi = q.type === "multi";
   const sel = multi ? (answers[q.id] || []) : [answers[q.id]];
-  const full = multi && q.max && sel.length >= q.max;
+  // classList.toggle에 undefined를 넘기면 켜고 끄기가 번갈아 일어나므로 반드시 true/false로 만든다
+  const full = Boolean(multi && q.max && sel.length >= q.max);
   wrap.querySelectorAll("label.opt").forEach(label => {
     const input = label.querySelector("input[type=radio],input[type=checkbox]");
     const on = sel.includes(input.value);
