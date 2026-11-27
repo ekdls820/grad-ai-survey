@@ -34,6 +34,8 @@
   .opt.disabled { opacity: .45; cursor: not-allowed; }
   .opt input { margin-top: 5px; accent-color: var(--accent); }
   .opt .other-input { display: block; width: 100%; margin-top: 6px; }
+  .opt strong { font-weight: 600; }
+  .opt .desc { color: var(--muted); font-size: 14px; }
   .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
   .scale .opt { flex-direction: column; align-items: center; text-align: center; font-size: 13px; padding: 10px 4px; }
   input[type=text], input[type=tel], textarea { width: 100%; font: inherit; padding: 10px 12px;
@@ -201,12 +203,14 @@ const SECTIONS = [
 
   { id: "s6", title: "희망 지원과 마무리", questions: [
     { id: "Q30", col: "Q30 희망 연구지원", text: "도서관이 제공하기를 바라는 연구지원은 무엇입니까?", type: "multi", max: 3,
-      options: ["연구 기초 교육: 연구방법론·통계 기초", "논문 읽는 법 교육", "AI 리터러시·연구윤리 교육",
-                "교내 AI 서비스(멀티 LLM 등)를 연구에 활용하는 방법 교육",
-                "연구 주제·연구 방법 설정 사례 안내", "잘 쓴 논문(서론 등) 사례 모음", "논문 투고 절차 안내",
-                "학위논문 작성 지원(양식, AI 보조 활용 방법)", "연구 질문·문헌 탐색 1:1 상담",
-                "공공·연구 데이터 찾기 지원", "관심사별 독서·논문 읽기 모임",
-                "같은 주제·방법론 연구자 간 스터디 매칭", OTHER] },
+      options: ["프롬프트 작성: 교내 멀티 LLM 등에서 전공·연구 질문을 반영한 프롬프트 만들기",
+                "선행연구 비교·정리: 문헌별 연구 방법·결과를 비교해 정리하기",
+                "논문 읽기: 어려운 논문의 구조와 방법을 빠르게 파악하기",
+                "연구방법론·통계 기초: 연구 설계와 분석 결과 해석",
+                "연구 주제 잡기: 주제와 연구 방법을 정한 사례 안내",
+                "학위논문·투고 지원: 작성 양식, 투고 절차, AI 보조 활용 범위",
+                "AI 연구윤리: 표절, AI 사용 범위와 학술지 고지 기준",
+                "연구자 교류: 같은 주제·방법론 연구자 스터디 매칭", OTHER] },
     { id: "Q31", col: "Q31 자유 의견", text: "AI로 해결하고 싶은 연구 작업이나 도서관에 바라는 점이 있다면 자유롭게 적어 주세요.", type: "text", required: false },
     { id: "Q32", col: "Q32 개인정보 동의", text: "개인정보 수집·이용에 동의하십니까? 동의한 응답자에게만 경품을 발송합니다.", type: "single",
       note: "수집 목적: 응답자 경품 발송 / 수집 항목: 휴대폰 번호 / 보유 기간: 경품 발송 후 즉시 파기",
@@ -272,7 +276,11 @@ function renderQuestion(q) {
       const input = el("input", { type: multi ? "checkbox" : "radio", name, value: opt, checked: selected });
       const label = el("label", { class: "opt" + (selected ? " checked" : ""), for: name + "-" + i }, input);
       input.id = name + "-" + i;
-      const textWrap = el("span", {}, isOther ? "기타" : opt);
+      // "제목: 설명" 형태의 보기는 제목을 굵게, 설명을 회색으로 나눠 한눈에 보이게 한다
+      const sep = isOther ? -1 : opt.indexOf(": ");
+      const textWrap = sep > 0
+        ? el("span", {}, el("strong", {}, opt.slice(0, sep)), el("span", { class: "desc" }, " " + opt.slice(sep + 2)))
+        : el("span", {}, isOther ? "기타" : opt);
       if (isOther) {
         const oi = el("input", { type: "text", class: "other-input" + (selected ? "" : " hidden"), placeholder: "직접 입력",
           oninput: e => otherText[q.id] = e.target.value });
